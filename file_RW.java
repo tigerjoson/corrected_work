@@ -4,8 +4,7 @@ import java.io.*;
 import java.util.stream.*;
 
 public class  file_RW{
-	String sorce_file="C:\\Users\\tiger\\Desktop\\work\\LNLNSJRN.del";
-	String destination_folder="C:\\Users\\tiger\\Desktop\\work\\output\\copy.txt";
+	
 	
 	public static void copy(String sorce_file,String destination_folder)throws  IOException {
 		try{
@@ -17,6 +16,17 @@ public class  file_RW{
 			OutputStream outputStream = new FileOutputStream(destination_folder);
 			OutputStreamWriter osr = new OutputStreamWriter(outputStream,"gbk");
 			BufferedWriter bWriter = new BufferedWriter(osr);
+			
+			String line;//garbled
+			byte [] line_byte;
+			int count=0;
+			
+			while((line=bR.readLine())!=null){
+				count++;
+				line_byte = line.getBytes("gbk");	
+				System.out.println(line_byte[count]);
+			}
+			
 			
 			
 			//close
