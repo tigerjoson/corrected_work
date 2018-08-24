@@ -1,0 +1,169 @@
+package abc;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+
+public class abc {
+
+ public static void main(String[] args) throws IOException {
+  File file1 = new File("D:/ETL/CBOD/${TXDATE1}/LNLNSJRN1.del");
+  BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file1),"gbk"));
+  Path path = Paths.get("D:/ETL/CBOD/${TXDATE1}/LNLNSJRN.del");
+  int x = 0;
+  //紀錄帳卡分類0或1
+  int i = 2;
+  String dig = "";
+  String chkdec = "";
+  int chkint = 0;
+  String dateString = "";
+  byte[] op = new byte[4];
+  byte[] op1 = new byte[62];
+  try {
+   byte[] result = Files.readAllBytes(path);
+   for (byte b : result) {
+    //判斷帳卡子分類屬於0或1     
+    if(x==89){
+     if((char) b == 'S' ||(char) b == 'T' ||(char) b == 'U' ||(char) b == 'X'){
+      i = 0;
+      if ((char) b == 'X') dig="X";
+     }
+     if((char) b == '1' ||(char) b == '9' ||(char) b == 'B' ||(char) b == 'C' ||(char) b == 'D' ||(char) b == 'E' ||(char) b == 'F' ||(char) b == 'G' ||(char) b == 'H' ||(char) b == 'I' ||(char) b == 'J' ||(char) b == 'O' ||(char) b == 'P' ||(char) b == 'Q' ||(char) b == 'R' ){
+      i = 1;
+     }
+    }
+    //小於160資料都一樣,一併處理
+    if (x < 160) {
+     if (x < 100 || x > 124 || (x > 115 && x <= 117)) {
+      dateString += (char) b;
+     } 
+     else {
+      chkdec += toHex(b);
+      if ( x == 107 || x == 115 || x == 124) {
+       if (!((toHex(b).substring(1).equals("C")) || (toHex(b).substring(1).equals("D")))) {
+        chkint++;
+        x--;
+       }
+       else{
+        if(chkint>0){
+         chkdec = chkdec.replace("2222", "22");
+         chkint = 0;
+        }
+        dateString += chkdec;
+        chkdec = "";
+       }
+      }
+
+     }
+
+     if (x == 36 || x == 37 || x == 45 || x == 54 || x == 79 || x == 88 || x == 89 || x == 97 || x == 98
+       || x == 99 || x == 107 || x == 115 || x == 117 || x == 124 || x == 127 || x == 139
+       || x == 151 ) {
+      dateString += '"' + "," + '"';
+     }
+    }
+    if (x == 160) {
+     dateString += '"' + "," + '"';
+
+    }
+    //(0)
+    if (i==0) {
+     if ((x==193||x==198||x==206||x==214||x==222||x==248) && (!((toHex(b).substring(1).equals("C")) || (toHex(b).substring(1).equals("D"))))){
+      x--;
+     }
+     if (x==248) dateString += '"' + "," + '"'+ '"' + "," + '"'+ '"' + "," + '"'+ '"' + "," + '"'+ '"' + "," + '"'+ '"' + "," + '"';
+     if (x==295) dateString += '"' + "," + '"'+ '"' + "," + '"';
+     if (x==358) dateString += '"' + "," + '"'+ '"' + "," + '"'+ '"' + "," + '"';
+     if (x<=357 && x>=249){
+      if(x!=279 && x!=280 && x!=281){
+
+       if(dig=="X" && (x==249||x==250||x==251||x==252)){
+         op[x-249] = b;
+         if(x==252){
+          dateString += new String(op,"gbk");
+          op = new byte[4];
+         }
+       }
+       else if( x<=356 && x>=295){
+         op1[x-295] = b;
+         if(x==356){
+          dateString += new String(op1,"gbk");
+          op1 = new byte[62];  
+         }
+       }
+       else dateString += (char) b;
+      }
+      
+      if(x==252||x==268||x==272||x==294||x==356) dateString += '"' + "," + '"';
+     }
+    }
+    //(1)
+    if (i==1) {
+     if ((x >= 160 && x <= 167)||(x >= 183 && x<= 242)||(x <= 325 && x >= 259)||(x <= 258 && x >= 243)){
+
+      if(x <= 323 && x >= 259){
+        if(x!= 279 &&x!= 280 &&x!= 281){
+         if(x<=278) op1[x-259] = b;
+         else op1[x-262] = b;
+         if(x==323){
+          dateString += new String(op1,"gbk");
+             
+          op1 = new byte[62];
+         }
+        }
+      }
+      else dateString += (char) b;
+
+      if(x== 167 ||x== 198 ||x== 199 ||x== 203 ||x== 219 ||x==223||x==242||x==250||x==258||x==323||x==324||x==325) dateString += '"' + "," + '"';
+     }
+     if((x<=182 && x>=168)||(x>=325 && x<=340)){
+      chkdec += toHex(b);
+      if (x==169||x==174||x==182||x==332||x==340) {
+
+       if (!((toHex(b).substring(1).equals("C")) || (toHex(b).substring(1).equals("D")))) {
+        chkint++;
+        x--;
+       }
+       else{
+        if(chkint>0){
+         chkdec = chkdec.replace("2222", "22");
+         chkint = 0;
+        }
+        dateString += chkdec;
+        chkdec = "";
+       }
+      }
+      
+     }
+     if(x==169||x==174||x==182||x==332) dateString += '"' + "," + '"';     
+    }
+    x++;
+    if (b == 10) {
+     dateString += '"';
+     bw.write(dateString);
+     bw.newLine();
+     dateString = "";
+     x = 0;
+     dig = "";
+     i = 2;
+    }
+    
+   }
+   bw.flush();
+   bw.close();
+
+  } catch (IOException e) {
+   e.printStackTrace();
+  }
+
+ } 
+
+ public static String toHex(byte b) {
+  return ("" + "0123456789ABCDEF".charAt(0xf & b >> 4) + "0123456789ABCDEF".charAt(b & 0xf));
+ }
+}

@@ -24,7 +24,8 @@ public class  file_RW{
 			while((line=bR.readLine())!=null){
 				count++;
 				line_byte = line.getBytes("gbk");	
-				System.out.println(line_byte[count]);
+				//System.out.println(line_byte[count]);
+				bWriter.write(line_byte[count]);
 			}
 			
 			
