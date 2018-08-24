@@ -3,6 +3,8 @@ package file_RW;
 import java.io.*;
 import java.util.stream.*;
 import java.nio.file.*;
+import java.nio.file.FileSystem;//getpath
+
 public class  file_RW{
 	
 	
@@ -17,7 +19,7 @@ public class  file_RW{
 			OutputStreamWriter osr = new OutputStreamWriter(outputStream,"gbk");
 			BufferedWriter bWriter = new BufferedWriter(osr);
 			
-			String line;//garbled
+			//String line;//garbled
 			byte [] line_byte;
 			int count=0;
 			
