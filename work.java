@@ -7,6 +7,5 @@ public class  work{
 		String sorce_file="C:\\Users\\tiger\\Desktop\\work\\LNLNSJRN.del";
 		String copy_folder="C:\\Users\\tiger\\Desktop\\work\\output\\copy.txt";
 		file_RW.copy(sorce_file,copy_folder);
-	
 	} 
 }
