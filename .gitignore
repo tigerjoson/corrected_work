@@ -3,7 +3,7 @@ git_quick_run.bat
 
 #all class folder
 file_RW
-test_code
+test
 
 #all class files
 *.class
